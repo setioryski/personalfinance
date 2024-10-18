@@ -1,0 +1,31 @@
+<?php
+// set_currency.php
+header('Content-Type: application/json');
+require 'db.php'; // Include the database connection
+
+$response = ['success' => false, 'message' => ''];
+
+// Define allowed currencies
+$allowed_currencies = ['USD', 'IDR', 'INR', 'MYR'];
+
+// Check if the request method is POST
+if ($_SERVER["REQUEST_METHOD"] === "POST") {
+    // Retrieve and sanitize the currency input
+    $currency = $_POST['currency'] ?? 'USD';
+    $currency = strtoupper(trim($currency));
+
+    // Validate the selected currency
+    if (in_array($currency, $allowed_currencies)) {
+        // Set the currency in session
+        $_SESSION['currency'] = $currency;
+        $response['success'] = true;
+        $response['message'] = "Currency updated to {$currency}.";
+    } else {
+        $response['message'] = "Invalid currency selection.";
+    }
+} else {
+    $response['message'] = "Invalid request method.";
+}
+
+echo json_encode($response);
+?>
