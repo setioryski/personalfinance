@@ -106,11 +106,19 @@
 
                 <!-- Transaction History Tab -->
                 <div class="tab-pane fade" id="history" role="tabpanel" aria-labelledby="history-tab">
-                    <h3>Transaction History</h3>
-                    <div id="transactionHistory" class="mt-3">
-                        <!-- Last 10 transactions and balance will be loaded here via AJAX -->
-                    </div>
-                </div>
+    <h3>Transaction History</h3>
+    <!-- Dropdown Selector for Number of Transactions -->
+    <div class="d-flex justify-content-end mb-3">
+        <label for="transactionCount" class="form-label me-2">Show:</label>
+        <select id="transactionCount" class="form-select w-auto">
+            <option value="10" selected>Last 10 Transactions</option>
+            <option value="50">Last 50 Transactions</option>
+        </select>
+    </div>
+    <div id="transactionHistory" class="mt-3">
+        <!-- Transactions will be loaded here via AJAX -->
+    </div>
+</div>
 
                 <!-- Manage Tab -->
                 <div class="tab-pane fade" id="manage" role="tabpanel" aria-labelledby="manage-tab">

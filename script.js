@@ -104,6 +104,8 @@ $(document).ready(function() {
         var storedSummaryResult = localStorage.getItem('summaryResult');
         if (storedSummaryResult) {
             $('#summaryResult').html(storedSummaryResult);
+            // Attach event listener to editable descriptions in the summary
+            attachDescriptionEditListeners();
         } else {
             // Optionally generate summary automatically
             $('#summaryForm').submit();
@@ -154,8 +156,9 @@ $(document).ready(function() {
                     // Reset Summary form dates to default
                     $('#start_date').datepicker('update', todayStr);
                     $('#end_date').datepicker('update', tomorrowStr);
-                    // Refresh the last 10 transactions and balance
-                    loadLastTenTransactions();
+                    // Refresh the last transactions based on selected count
+                    var selectedCount = $('#transactionCount').val() || 10;
+                    loadTransactions(selectedCount);
                 } else {
                     $('#formMessage').html('<div class="alert alert-danger">' + response.message + '</div>');
                 }
@@ -221,11 +224,11 @@ $(document).ready(function() {
 
                         data.transactions.forEach(function(tx) {
                             transactionsHtml += `
-                                <tr>
+                                <tr data-transaction-id="${tx.id}">
                                     <td>${formatDateToDDMMYYYY(tx.transaction_date)}</td>
                                     <td>${tx.type}</td>
                                     <td class="amount-cell">${formatAmountWithSign(tx.amount, tx.type)}</td>
-                                    <td>${tx.description}</td>
+                                    <td class="editable-description" contenteditable="true">${tx.description}</td>
                                 </tr>
                             `;
                         });
@@ -244,6 +247,9 @@ $(document).ready(function() {
 
                     // Store the summary result in localStorage
                     localStorage.setItem('summaryResult', summaryHtml);
+
+                    // Attach event listener to editable descriptions
+                    attachDescriptionEditListeners();
 
                 } else {
                     $('#summaryResult').html('<div class="alert alert-danger">' + response.message + '</div>');
@@ -281,8 +287,9 @@ $(document).ready(function() {
                     // Show success message
                     $('#manageMessage').html('<div class="alert alert-success">' + response.message + '</div>');
 
-                    // Refresh the Transaction History
-                    loadLastTenTransactions();
+                    // Refresh the Transaction History based on selected count
+                    var selectedCount = $('#transactionCount').val() || 10;
+                    loadTransactions(selectedCount);
 
                     // Clear the summary results and stored data
                     $('#summaryResult').html('');
@@ -303,11 +310,12 @@ $(document).ready(function() {
         });
     });
 
-    // Function to load the last 10 transactions and current balance
-    function loadLastTenTransactions() {
+    // Function to load transactions based on the selected count
+    function loadTransactions(count = 10) {
         $.ajax({
             url: 'get_transaction_history.php',
             type: 'GET',
+            data: { count: count }, // Pass the count as a GET parameter
             dataType: 'json',
             success: function(response) {
                 if(response.success) {
@@ -324,7 +332,7 @@ $(document).ready(function() {
 
                     if(transactions && transactions.length > 0) {
                         historyHtml += `
-                            <h5>Last 10 Transactions:</h5>
+                            <h5>Last ${count} Transactions:</h5>
                             <div class="table-responsive">
                                 <table class="table table-striped">
                                     <thead>
@@ -339,11 +347,11 @@ $(document).ready(function() {
                         `;
                         transactions.forEach(function(tx) {
                             historyHtml += `
-                                <tr>
+                                <tr data-transaction-id="${tx.id}">
                                     <td>${formatDateToDDMMYYYY(tx.transaction_date)}</td>
                                     <td>${tx.type}</td>
                                     <td class="amount-cell">${formatAmountWithSign(tx.amount, tx.type)}</td>
-                                    <td>${tx.description}</td>
+                                    <td class="editable-description" contenteditable="true">${tx.description}</td>
                                 </tr>
                             `;
                         });
@@ -357,6 +365,10 @@ $(document).ready(function() {
                     }
 
                     $('#transactionHistory').html(historyHtml);
+
+                    // Attach event listener to editable descriptions
+                    attachDescriptionEditListeners();
+
                 } else {
                     $('#transactionHistory').html('<div class="alert alert-danger">' + response.message + '</div>');
                 }
@@ -367,6 +379,47 @@ $(document).ready(function() {
         });
     }
 
-    // Load the last 10 transactions and balance on page load
-    loadLastTenTransactions();
+    // Function to attach event listeners to editable descriptions
+    function attachDescriptionEditListeners() {
+        $('.editable-description').off('blur').on('blur', function() {
+            var newDescription = $(this).text().trim();
+            var transactionId = $(this).closest('tr').data('transaction-id');
+            var cell = $(this);
+
+            // Send AJAX request to update description
+            $.ajax({
+                url: 'update_description.php',
+                type: 'POST',
+                data: {
+                    id: transactionId,
+                    description: newDescription
+                },
+                dataType: 'json',
+                success: function(response) {
+                    if(response.success) {
+                        // Optionally show a success message or highlight the cell
+                        cell.addClass('description-updated');
+                        setTimeout(function() {
+                            cell.removeClass('description-updated');
+                        }, 2000);
+                    } else {
+                        alert('Failed to update description: ' + response.message);
+                    }
+                },
+                error: function() {
+                    alert('An error occurred while updating the description.');
+                }
+            });
+        });
+    }
+
+    // Handle change event on the transaction count selector
+    $('#transactionCount').change(function() {
+        var selectedCount = $(this).val();
+        loadTransactions(selectedCount);
+    });
+
+    // Load the selected number of transactions on page load
+    var initialCount = $('#transactionCount').val() || 10;
+    loadTransactions(initialCount);
 });
