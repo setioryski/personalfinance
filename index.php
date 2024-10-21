@@ -64,7 +64,7 @@
                 <!-- Add Transaction Tab -->
                 <div class="tab-pane fade show active" id="add" role="tabpanel" aria-labelledby="add-tab">
                     <form id="transactionForm">
-                        <div class="mb-3">
+                        <div class="mt-3">
                             <label for="date" class="form-label">Date<span class="text-danger">*</span>:</label>
                             <!-- Changed input type to 'text' for datepicker -->
                             <input type="text" class="form-control datepicker" id="date" name="date" required placeholder="dd-mm-yyyy">

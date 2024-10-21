@@ -58,20 +58,26 @@ $(document).ready(function() {
         //language: 'id' // Uncomment if you want to set the datepicker language to Indonesian
     });
 
-    // **Restore Last Active Tab on Page Load**
-    // Get the last active tab from localStorage
-    var lastActiveTab = localStorage.getItem('activeTab');
-    if (lastActiveTab) {
-        var tabTrigger = new bootstrap.Tab(document.querySelector('button[data-bs-target="' + lastActiveTab + '"]'));
-        tabTrigger.show();
-    } else {
-        // Default to Add Transaction tab
-        var tabTrigger = new bootstrap.Tab(document.querySelector('button[data-bs-target="#add"]'));
-        tabTrigger.show();
+    // **Function to Get URL Parameters (Optional)**
+    // If you still want to handle URL parameters without changing tabs, you can keep this function
+    function getUrlParams() {
+        var params = {};
+        var queryString = window.location.search.substring(1);
+        var regex = /([^&=]+)=([^&]*)/g;
+        var m;
+        while (m = regex.exec(queryString)) {
+            params[decodeURIComponent(m[1])] = decodeURIComponent(m[2]);
+        }
+        return params;
     }
 
+    // **Set the 'Add Transaction' Tab as the Initial Active Tab**
+    // Remove any code that changes the active tab based on URL parameters or localStorage
+    var tabTrigger = new bootstrap.Tab(document.querySelector('button[data-bs-target="#add"]'));
+    tabTrigger.show();
+
     // **Remove the 'invisible' class after activating the correct tab**
-    document.getElementById('tabContentWrapper').classList.remove('invisible');
+    $('#tabContentWrapper').removeClass('invisible');
 
     // **Save Active Tab on Tab Change**
     $('button[data-bs-toggle="tab"]').on('shown.bs.tab', function (e) {
@@ -100,18 +106,42 @@ $(document).ready(function() {
     localStorage.setItem('summaryStartDate', firstDayStr);
     localStorage.setItem('summaryEndDate', lastDayStr);
 
-    // Load stored summary result if Summary tab is active
-    if (lastActiveTab === '#summary') {
-        var storedSummaryResult = localStorage.getItem('summaryResult');
-        if (storedSummaryResult) {
-            $('#summaryResult').html(storedSummaryResult);
-            // Attach event listener to editable descriptions in the summary
-            attachDescriptionEditListeners();
-        } else {
-            // Optionally generate summary automatically
-            $('#summaryForm').submit();
+    // **Optionally Handle URL Parameters Without Changing Tabs**
+    // If you still want to prefill the Summary form when URL parameters are present, you can do so without changing the active tab
+    var urlParams = getUrlParams();
+    if (urlParams.start_date && urlParams.end_date) {
+        $('#start_date').datepicker('update', urlParams.start_date);
+        $('#end_date').datepicker('update', urlParams.end_date);
+        // Optionally submit the Summary form automatically
+        // $('#summaryForm').submit();
+    } else {
+        // If you have stored summary dates, you can restore them
+        var storedStartDate = localStorage.getItem('summaryStartDate');
+        var storedEndDate = localStorage.getItem('summaryEndDate');
+        if (storedStartDate) {
+            $('#start_date').datepicker('update', storedStartDate);
+        }
+        if (storedEndDate) {
+            $('#end_date').datepicker('update', storedEndDate);
         }
     }
+
+    // **Load stored summary result if Summary tab is active**
+    // Since the Add Transaction tab is always the initial tab, we check if the Summary tab is active before loading stored results
+    $('button[data-bs-toggle="tab"]').on('shown.bs.tab', function (e) {
+        var activeTab = $(e.target).attr('data-bs-target');
+        if (activeTab === '#summary') {
+            var storedSummaryResult = localStorage.getItem('summaryResult');
+            if (storedSummaryResult) {
+                $('#summaryResult').html(storedSummaryResult);
+                // Attach event listener to editable descriptions in the summary
+                attachDescriptionEditListeners();
+            } else {
+                // Optionally generate summary automatically
+                $('#summaryForm').submit();
+            }
+        }
+    });
 
     // Format amount input with commas as the user types
     $('#amount').on('input', function() {
@@ -144,7 +174,7 @@ $(document).ready(function() {
             $(containerSelector).find('.alert').fadeOut('slow', function() {
                 $(this).remove();
             });
-        }, 1000); // 2000 milliseconds = 2 seconds
+        }, 2000); // 2000 milliseconds = 2 seconds
     }
 
     // Handle Add Transaction Form Submission
@@ -175,8 +205,8 @@ $(document).ready(function() {
                     // Reset the date to today after reset
                     $('#date').datepicker('update', todayStr);
                     // Reset Summary form dates to default
-                    $('#start_date').datepicker('update', todayStr);
-                    $('#end_date').datepicker('update', tomorrowStr);
+                    $('#start_date').datepicker('update', firstDayStr);
+                    $('#end_date').datepicker('update', lastDayStr);
                     // Refresh the transactions based on selected count
                     var selectedCount = $('#transactionCount').val() || 10;
                     loadTransactions(selectedCount);
@@ -234,6 +264,7 @@ $(document).ready(function() {
                                 <table class="table table-bordered">
                                     <thead>
                                         <tr>
+                                            <th>No.</th>
                                             <th>Date</th>
                                             <th>Type</th>
                                             <th>Amount (IDR)</th>
@@ -243,9 +274,10 @@ $(document).ready(function() {
                                     <tbody>
                         `;
 
-                        data.transactions.forEach(function(tx) {
+                        data.transactions.forEach(function(tx, index) {
                             transactionsHtml += `
                                 <tr data-transaction-id="${tx.id}">
+                                    <td>${index + 1}</td>
                                     <td>${formatDateToDDMMYYYY(tx.transaction_date)}</td>
                                     <td>${tx.type}</td>
                                     <td class="amount-cell">${formatAmountWithSign(tx.amount, tx.type)}</td>
@@ -255,10 +287,10 @@ $(document).ready(function() {
                         });
 
                         transactionsHtml += `
-                                    </tbody>
-                                </table>
-                            </div>
-                        `;
+                                        </tbody>
+                                    </table>
+                                </div>
+                            `;
                         summaryHtml += transactionsHtml;
                     } else {
                         summaryHtml += '<div class="alert alert-info">No transactions found in this date range.</div>';
@@ -342,9 +374,9 @@ $(document).ready(function() {
                 if (response.success) {
                     var transactions = response.data;
                     var currentBalance = response.current_balance;
-    
+
                     var historyHtml = '';
-    
+
                     // Display the current balance at the top
                     historyHtml += `
                         <div class="card mb-4">
@@ -353,7 +385,7 @@ $(document).ready(function() {
                             </div>
                         </div>
                     `;
-    
+
                     if (transactions && transactions.length > 0) {
                         historyHtml += `
                             <div class="table-responsive">
@@ -370,7 +402,7 @@ $(document).ready(function() {
                                     </thead>
                                     <tbody>
                         `;
-    
+
                         transactions.forEach(function(tx, index) {
                             historyHtml += `
                                 <tr data-transaction-id="${tx.id}">
@@ -383,21 +415,21 @@ $(document).ready(function() {
                                 </tr>
                             `;
                         });
-    
+
                         historyHtml += `
-                                    </tbody>
-                                </table>
-                            </div>
-                        `;
+                                        </tbody>
+                                    </table>
+                                </div>
+                            `;
                     } else {
                         historyHtml += '<div class="alert alert-info">No transactions found.</div>';
                     }
-    
+
                     $('#transactionHistory').html(historyHtml);
-    
+
                     // Attach event listener to editable descriptions
                     attachDescriptionEditListeners();
-    
+
                 } else {
                     $('#transactionHistory').html('<div class="alert alert-danger">' + response.message + '</div>');
                 }
@@ -415,7 +447,7 @@ $(document).ready(function() {
             var transactionId = $(this).closest('tr').data('transaction-id');
             var cell = $(this);
 
-            // Send AJAX request to update description
+            // Send AJAX request to update_description.php
             $.ajax({
                 url: 'update_description.php',
                 type: 'POST',
