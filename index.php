@@ -22,25 +22,36 @@
 </head>
 <body>
     <div class="container my-5">
-    <h1 class="text-center mb-4 display-4 finance-tracker-title">
-    <i class="fas fa-wallet me-2"></i>Finance Tracker
-</h1>
+        <h1 class="text-center mb-4 display-4 finance-tracker-title">
+            <i class="fas fa-wallet me-2"></i>Finance Tracker
+        </h1>
         
-         <!-- Navigation Tabs -->
+        <!-- Navigation Tabs -->
         <!-- Wrap the nav tabs in a div with overflow-x: auto -->
         <div class="nav-tabs-wrapper">
             <ul class="nav nav-tabs mb-4 flex-nowrap" id="financeTabs" role="tablist">
+                <!-- Changed Order: Add Transaction remains first -->
                 <li class="nav-item" role="presentation">
-                    <button class="nav-link" id="add-tab" data-bs-toggle="tab" data-bs-target="#add" type="button" role="tab" aria-controls="add" aria-selected="false">Add Transaction</button>
+                    <button class="nav-link active" id="add-tab" data-bs-toggle="tab" data-bs-target="#add" type="button" role="tab" aria-controls="add" aria-selected="true">
+    <i class="fas fa-plus-circle me-1"></i> Add Transaction</button>
                 </li>
+                <!-- Changed Order: Transaction History moved to second -->
                 <li class="nav-item" role="presentation">
-                    <button class="nav-link" id="summary-tab" data-bs-toggle="tab" data-bs-target="#summary" type="button" role="tab" aria-controls="summary" aria-selected="false">Summary</button>
+                <button class="nav-link" id="history-tab" data-bs-toggle="tab" data-bs-target="#history" type="button" role="tab" aria-controls="history" aria-selected="false">
+    <i class="fas fa-history me-1"></i> Transaction History
+</button>
                 </li>
+                <!-- Changed Order: Summary moved to third -->
                 <li class="nav-item" role="presentation">
-                    <button class="nav-link" id="history-tab" data-bs-toggle="tab" data-bs-target="#history" type="button" role="tab" aria-controls="history" aria-selected="false">Transaction History</button>
+                <button class="nav-link" id="summary-tab" data-bs-toggle="tab" data-bs-target="#summary" type="button" role="tab" aria-controls="summary" aria-selected="false">
+    <i class="fas fa-chart-line me-1"></i> Summary
+</button>
                 </li>
+                <!-- Manage remains last -->
                 <li class="nav-item" role="presentation">
-                    <button class="nav-link" id="manage-tab" data-bs-toggle="tab" data-bs-target="#manage" type="button" role="tab" aria-controls="manage" aria-selected="false">Manage</button>
+                <button class="nav-link" id="manage-tab" data-bs-toggle="tab" data-bs-target="#manage" type="button" role="tab" aria-controls="manage" aria-selected="false">
+    <i class="fas fa-cog me-1"></i> Manage
+</button>
                 </li>
                 <!-- Add more tabs here if needed -->
             </ul>
@@ -82,6 +93,22 @@
                     <div id="formMessage" class="mt-3"></div>
                 </div>
 
+                <!-- Transaction History Tab -->
+                <div class="tab-pane fade" id="history" role="tabpanel" aria-labelledby="history-tab">
+                    <h3>Transaction History</h3>
+                    <!-- Dropdown Selector for Number of Transactions -->
+                    <div class="d-flex justify-content-end mb-3">
+                        <label for="transactionCount" class="form-label me-2">Show:</label>
+                        <select id="transactionCount" class="form-select transaction-count-select">
+                            <option value="10" selected>Last 10 Transactions</option>
+                            <option value="50">Last 50 Transactions</option>
+                        </select>
+                    </div>
+                    <div id="transactionHistory" class="mt-3">
+                        <!-- Transactions will be loaded here via AJAX -->
+                    </div>
+                </div>
+
                 <!-- Summary Tab -->
                 <div class="tab-pane fade" id="summary" role="tabpanel" aria-labelledby="summary-tab">
                     <div class="mb-4">
@@ -105,23 +132,6 @@
                     </div>
                     <div id="summaryResult"></div>
                 </div>
-
-<!-- Transaction History Tab -->
-<div class="tab-pane fade" id="history" role="tabpanel" aria-labelledby="history-tab">
-    <h3>Transaction History</h3>
-    <!-- Dropdown Selector for Number of Transactions -->
-    <div class="d-flex justify-content-end mb-3">
-        <label for="transactionCount" class="form-label me-2">Show:</label>
-        <select id="transactionCount" class="form-select transaction-count-select">
-            <option value="10" selected>Last 10 Transactions</option>
-            <option value="50">Last 50 Transactions</option>
-        </select>
-    </div>
-    <div id="transactionHistory" class="mt-3">
-        <!-- Transactions will be loaded here via AJAX -->
-    </div>
-</div>
-
 
                 <!-- Manage Tab -->
                 <div class="tab-pane fade" id="manage" role="tabpanel" aria-labelledby="manage-tab">

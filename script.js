@@ -83,21 +83,24 @@ $(document).ready(function() {
 
     // Set the date input to today's date on page load
     var today = new Date();
-    var todayStr = ('0' + today.getDate()).slice(-2) + '-' + ('0' + (today.getMonth()+1)).slice(-2) + '-' + today.getFullYear();
+    var todayStr = ('0' + today.getDate()).slice(-2) + '-' + ('0' + (today.getMonth() + 1)).slice(-2) + '-' + today.getFullYear();
     $('#date').datepicker('update', todayStr);
 
-    // Set the Summary form's start_date to today and end_date to tomorrow
-    var tomorrow = new Date();
-    tomorrow.setDate(today.getDate() + 1);
-    var tomorrowStr = ('0' + tomorrow.getDate()).slice(-2) + '-' + ('0' + (tomorrow.getMonth()+1)).slice(-2) + '-' + tomorrow.getFullYear();
+    // Calculate the first day of the current month
+    var firstDay = new Date(today.getFullYear(), today.getMonth(), 1);
+    var firstDayStr = ('0' + firstDay.getDate()).slice(-2) + '-' + ('0' + (firstDay.getMonth() + 1)).slice(-2) + '-' + firstDay.getFullYear();
+
+    // Calculate the last day of the current month
+    var lastDay = new Date(today.getFullYear(), today.getMonth() + 1, 0);
+    var lastDayStr = ('0' + lastDay.getDate()).slice(-2) + '-' + ('0' + (lastDay.getMonth() + 1)).slice(-2) + '-' + lastDay.getFullYear();
 
     // Set the default dates in the datepickers
-    $('#start_date').datepicker('update', todayStr);
-    $('#end_date').datepicker('update', tomorrowStr);
+    $('#start_date').datepicker('update', firstDayStr);
+    $('#end_date').datepicker('update', lastDayStr);
 
     // Store default dates in localStorage
-    localStorage.setItem('summaryStartDate', todayStr);
-    localStorage.setItem('summaryEndDate', tomorrowStr);
+    localStorage.setItem('summaryStartDate', firstDayStr);
+    localStorage.setItem('summaryEndDate', lastDayStr);
 
     // Load stored summary result if Summary tab is active
     if (lastActiveTab === '#summary') {
