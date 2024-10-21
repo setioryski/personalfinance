@@ -1,5 +1,3 @@
-// script.js
-
 $(document).ready(function() {
     // Enable Bootstrap tooltips
     var tooltipTriggerList = [].slice.call(document.querySelectorAll('[data-bs-toggle="tooltip"]'))

@@ -58,11 +58,11 @@
         </div>
 
         <!-- Tab Content Wrapper with 'invisible' class -->
-        <div id="tabContentWrapper" class="invisible">
+        <div id="tabContentWrapper">
             <!-- Tab Content -->
             <div class="tab-content" id="financeTabsContent">
                 <!-- Add Transaction Tab -->
-                <div class="tab-pane fade" id="add" role="tabpanel" aria-labelledby="add-tab">
+                <div class="tab-pane fade show active" id="add" role="tabpanel" aria-labelledby="add-tab">
                     <form id="transactionForm">
                         <div class="mb-3">
                             <label for="date" class="form-label">Date<span class="text-danger">*</span>:</label>
