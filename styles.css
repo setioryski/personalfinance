@@ -319,3 +319,38 @@ h1, h3, h5 {
     border-radius: 12px;
     box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
 }
+
+/* Center Align the Numbering Column */
+.table thead th:first-child,
+.table tbody td:first-child {
+    text-align: center;
+    width: 50px; /* Adjust the width as needed */
+}
+
+/* Adjust Other Columns if Necessary */
+.table thead th,
+.table tbody td {
+    vertical-align: middle;
+}
+
+.table thead th {
+    text-align: center;
+}
+
+/* Right-align Amount and Balance Columns */
+.amount-cell {
+    white-space: nowrap;
+    text-align: right;
+}
+
+/* Editable Description Styles */
+.editable-description {
+    border-bottom: 1px dashed #007aff;
+    cursor: text;
+    word-wrap: break-word;
+}
+
+/* Ensure Table Responsiveness */
+.table-responsive {
+    overflow-x: auto;
+}

@@ -341,43 +341,51 @@ $(document).ready(function() {
             data: { count: count }, // Pass the count as a GET parameter
             dataType: 'json',
             success: function(response) {
-                if(response.success) {
+                if (response.success) {
                     var transactions = response.data;
-                    var balance = response.balance;
-
-                    var historyHtml = `
+                    var currentBalance = response.current_balance;
+    
+                    var historyHtml = '';
+    
+                    // Display the current balance at the top
+                    historyHtml += `
                         <div class="card mb-4">
                             <div class="card-body">
-                                <h5 class="card-title">Current Balance: ${formatAmount(balance)}</h5>
+                                <h5 class="card-title">Current Balance: ${formatAmount(currentBalance)}</h5>
                             </div>
                         </div>
                     `;
-
-                    if(transactions && transactions.length > 0) {
+    
+                    if (transactions && transactions.length > 0) {
                         historyHtml += `
-                            <h5>Last ${count} Transactions:</h5>
                             <div class="table-responsive">
                                 <table class="table table-striped">
                                     <thead>
                                         <tr>
+                                            <th>No.</th>
                                             <th>Date</th>
                                             <th>Type</th>
                                             <th>Amount (IDR)</th>
                                             <th>Description</th>
+                                            <th>Balance (IDR)</th>
                                         </tr>
                                     </thead>
                                     <tbody>
                         `;
-                        transactions.forEach(function(tx) {
+    
+                        transactions.forEach(function(tx, index) {
                             historyHtml += `
                                 <tr data-transaction-id="${tx.id}">
+                                    <td>${index + 1}</td>
                                     <td>${formatDateToDDMMYYYY(tx.transaction_date)}</td>
                                     <td>${tx.type}</td>
                                     <td class="amount-cell">${formatAmountWithSign(tx.amount, tx.type)}</td>
                                     <td class="editable-description" contenteditable="true">${tx.description}</td>
+                                    <td class="amount-cell">${formatAmount(tx.balance)}</td>
                                 </tr>
                             `;
                         });
+    
                         historyHtml += `
                                     </tbody>
                                 </table>
@@ -386,18 +394,18 @@ $(document).ready(function() {
                     } else {
                         historyHtml += '<div class="alert alert-info">No transactions found.</div>';
                     }
-
+    
                     $('#transactionHistory').html(historyHtml);
-
+    
                     // Attach event listener to editable descriptions
                     attachDescriptionEditListeners();
-
+    
                 } else {
-                    showAlert('#transactionHistory', 'danger', response.message);
+                    $('#transactionHistory').html('<div class="alert alert-danger">' + response.message + '</div>');
                 }
             },
             error: function() {
-                showAlert('#transactionHistory', 'danger', 'An error occurred while fetching transaction history.');
+                $('#transactionHistory').html('<div class="alert alert-danger">An error occurred while fetching transaction history.</div>');
             }
         });
     }
