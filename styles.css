@@ -182,6 +182,50 @@ h1, h3, h5 {
     }
 }
 
+/* Custom Class for Transaction Count Selector */
+.transaction-count-select {
+    width: 170px;
+    border-radius: 8px;
+    border: 1px solid #c7c7cc;
+    padding: 6px 12px;
+    font-size: 1em;
+    color: #1d1d1f;
+}
+
+.transaction-count-select:focus {
+    border-color: #007aff;
+    box-shadow: none;
+}
+
+/* Adjust width on smaller screens */
+@media (max-width: 576px) {
+    .transaction-count-select {
+        width: 140px; /* Adjust as needed */
+    }
+}
+
+@media (max-width: 400px) {
+    .transaction-count-select {
+        width: 120px; /* Adjust as needed */
+    }
+}
+
+/* Editable Description Styles */
+.editable-description {
+    border-bottom: 1px dashed #007aff;
+    cursor: text;
+}
+
+.editable-description:focus {
+    outline: none;
+    background-color: #e5f6fd;
+}
+
+.description-updated {
+    background-color: #e6ffed;
+    transition: background-color 0.5s ease;
+}
+
 /* Alerts */
 .alert {
     border-radius: 8px;
@@ -233,62 +277,4 @@ h1, h3, h5 {
 
 .nav-tabs-wrapper::-webkit-scrollbar-track {
     background-color: #f5f5f7;
-}
-.editable-description {
-    border-bottom: 1px dashed #007aff;
-    cursor: text;
-}
-
-.editable-description:focus {
-    outline: none;
-    background-color: #e5f6fd;
-}
-
-/* Dropdown Selector Styles */
-#transactionCount {
-    border-radius: 8px;
-    border: 1px solid #c7c7cc;
-    padding: 6px 12px;
-    font-size: 1em;
-    color: #1d1d1f;
-}
-
-#transactionCount:focus {
-    border-color: #007aff;
-    box-shadow: none;
-}
-
-@media (max-width: 576px) {
-    #transactionCount {
-        font-size: 0.9em;
-    }
-}
-
-@media (max-width: 400px) {
-    #transactionCount {
-        font-size: 0.8em;
-    }
-}
-
-/* Editable Description Styles */
-.editable-description {
-    border-bottom: 1px dashed #007aff;
-    cursor: text;
-}
-
-.editable-description:focus {
-    outline: none;
-    background-color: #e5f6fd;
-}
-
-.description-updated {
-    background-color: #e6ffed;
-    transition: background-color 0.5s ease;
-
-    
-}
-
-/* Custom Class for Transaction Count Selector */
-.transaction-count-select {
-    width: 170px;
 }

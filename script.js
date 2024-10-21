@@ -156,7 +156,7 @@ $(document).ready(function() {
                     // Reset Summary form dates to default
                     $('#start_date').datepicker('update', todayStr);
                     $('#end_date').datepicker('update', tomorrowStr);
-                    // Refresh the last transactions based on selected count
+                    // Refresh the transactions based on selected count
                     var selectedCount = $('#transactionCount').val() || 10;
                     loadTransactions(selectedCount);
                 } else {
@@ -287,7 +287,7 @@ $(document).ready(function() {
                     // Show success message
                     $('#manageMessage').html('<div class="alert alert-success">' + response.message + '</div>');
 
-                    // Refresh the Transaction History based on selected count
+                    // Refresh the transactions based on selected count
                     var selectedCount = $('#transactionCount').val() || 10;
                     loadTransactions(selectedCount);
 
