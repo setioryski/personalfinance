@@ -18,7 +18,7 @@ if ($start_date) {
         $params[] = $end_date;
     }
 
-    // Append ORDER BY clause for descending order and id descending
+    // Append ORDER BY clause for descending order by date and id
     $sql .= " ORDER BY transaction_date DESC, id DESC";
 
     $stmt = $conn->prepare($sql);

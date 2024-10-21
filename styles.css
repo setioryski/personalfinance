@@ -278,3 +278,44 @@ h1, h3, h5 {
 .nav-tabs-wrapper::-webkit-scrollbar-track {
     background-color: #f5f5f7;
 }
+
+/* Alert Styles (Ensure Smooth Transitions) */
+.alert {
+    border-radius: 8px;
+    padding: 15px;
+    font-weight: 500;
+    transition: opacity 0.5s ease, visibility 0.5s ease;
+}
+
+.alert-success {
+    background-color: #e6ffed;
+    color: #1d1d1f;
+    border: 1px solid #34c759;
+}
+
+.alert-danger {
+    background-color: #ffebee;
+    color: #1d1d1f;
+    border: 1px solid #ff3b30;
+}
+
+.alert-info {
+    background-color: #e5f6fd;
+    color: #1d1d1f;
+    border: 1px solid #007aff;
+}
+
+/* Optional: Customize Alert Fade-Out Speed */
+.fade.out {
+    opacity: 0;
+    transition: opacity 0.5s ease;
+}
+
+/* */
+/* Container with Subtle Gradient Background */
+.container {
+    background: linear-gradient(135deg, #ffffff, #f0f4f8);
+    padding: 40px;
+    border-radius: 12px;
+    box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+}

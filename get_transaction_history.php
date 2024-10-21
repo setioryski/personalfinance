@@ -12,7 +12,7 @@ if ($count !== 10 && $count !== 50) {
     $count = 10; // Default to 10 if invalid
 }
 
-// Fetch the last 'count' transactions, ordered by date descending and id descending
+// Fetch the last 'count' transactions, ordered by date and id descendingly
 $stmt = $conn->prepare("SELECT id, transaction_date, type, amount, description FROM transactions ORDER BY transaction_date DESC, id DESC LIMIT ?");
 $stmt->bind_param("i", $count);
 $stmt->execute();

@@ -22,7 +22,9 @@
 </head>
 <body>
     <div class="container my-5">
-        <h1 class="text-center mb-4">Finance Tracker</h1>
+    <h1 class="text-center mb-4 display-4 finance-tracker-title">
+    <i class="fas fa-wallet me-2"></i>Finance Tracker
+</h1>
         
          <!-- Navigation Tabs -->
         <!-- Wrap the nav tabs in a div with overflow-x: auto -->

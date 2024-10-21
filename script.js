@@ -126,6 +126,26 @@ $(document).ready(function() {
         $(this).val(formatted);
     });
 
+    // Function to display alerts that auto-dismiss after 2 seconds
+    function showAlert(containerSelector, type, message) {
+        // Create the alert div with Bootstrap classes
+        var alertHtml = `
+        <div class="alert alert-${type} alert-dismissible fade show" role="alert">
+            ${message}
+        </div>
+    `;
+        
+        // Insert the alert into the specified container
+        $(containerSelector).html(alertHtml);
+        
+        // Automatically fade out and remove the alert after 2 seconds
+        setTimeout(function() {
+            $(containerSelector).find('.alert').fadeOut('slow', function() {
+                $(this).remove();
+            });
+        }, 1000); // 2000 milliseconds = 2 seconds
+    }
+
     // Handle Add Transaction Form Submission
     $('#transactionForm').submit(function(event) {
         event.preventDefault(); // Prevent default form submission
@@ -149,7 +169,7 @@ $(document).ready(function() {
             dataType: 'json',
             success: function(response) {
                 if(response.success) {
-                    $('#formMessage').html('<div class="alert alert-success">' + response.message + '</div>');
+                    showAlert('#formMessage', 'success', response.message);
                     $('#transactionForm')[0].reset();
                     // Reset the date to today after reset
                     $('#date').datepicker('update', todayStr);
@@ -160,11 +180,11 @@ $(document).ready(function() {
                     var selectedCount = $('#transactionCount').val() || 10;
                     loadTransactions(selectedCount);
                 } else {
-                    $('#formMessage').html('<div class="alert alert-danger">' + response.message + '</div>');
+                    showAlert('#formMessage', 'danger', response.message);
                 }
             },
             error: function() {
-                $('#formMessage').html('<div class="alert alert-danger">An error occurred while processing your request.</div>');
+                showAlert('#formMessage', 'danger', 'An error occurred while processing your request.');
             }
         });
     });
@@ -252,11 +272,11 @@ $(document).ready(function() {
                     attachDescriptionEditListeners();
 
                 } else {
-                    $('#summaryResult').html('<div class="alert alert-danger">' + response.message + '</div>');
+                    showAlert('#summaryResult', 'danger', response.message);
                 }
             },
             error: function() {
-                $('#summaryResult').html('<div class="alert alert-danger">An error occurred while fetching the summary.</div>');
+                showAlert('#summaryResult', 'danger', 'An error occurred while fetching the summary.');
             }
         });
     });
@@ -285,7 +305,7 @@ $(document).ready(function() {
                     deleteModal.hide();
 
                     // Show success message
-                    $('#manageMessage').html('<div class="alert alert-success">' + response.message + '</div>');
+                    showAlert('#manageMessage', 'success', response.message);
 
                     // Refresh the transactions based on selected count
                     var selectedCount = $('#transactionCount').val() || 10;
@@ -297,11 +317,11 @@ $(document).ready(function() {
 
                 } else {
                     // Show error message
-                    $('#manageMessage').html('<div class="alert alert-danger">' + response.message + '</div>');
+                    showAlert('#manageMessage', 'danger', response.message);
                 }
             },
             error: function() {
-                $('#manageMessage').html('<div class="alert alert-danger">An error occurred while deleting transactions.</div>');
+                showAlert('#manageMessage', 'danger', 'An error occurred while deleting transactions.');
             },
             complete: function() {
                 // Re-enable the delete button and reset text
@@ -370,11 +390,11 @@ $(document).ready(function() {
                     attachDescriptionEditListeners();
 
                 } else {
-                    $('#transactionHistory').html('<div class="alert alert-danger">' + response.message + '</div>');
+                    showAlert('#transactionHistory', 'danger', response.message);
                 }
             },
             error: function() {
-                $('#transactionHistory').html('<div class="alert alert-danger">An error occurred while fetching transaction history.</div>');
+                showAlert('#transactionHistory', 'danger', 'An error occurred while fetching transaction history.');
             }
         });
     }
