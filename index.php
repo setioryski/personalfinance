@@ -13,6 +13,8 @@
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css">
     <!-- Custom CSS -->
     <link rel="stylesheet" href="styles.css">
+    <!-- Font Awesome CDN -->
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css" integrity="sha512-p6X3Y1MnwHvtLwZ0tpbXLEhD7f0SW4JzRlwY0GJwOKsMxLodFZ1e7U/OvzYkXK6tY9Xg1XmC/oaS+M3Gx0YyTA==" crossorigin="anonymous" referrerpolicy="no-referrer" />
     <!-- Inline CSS to control visibility -->
     <style>
         .invisible {
@@ -195,5 +197,23 @@
     <script src="https://cdn.jsdelivr.net/npm/bootstrap-datepicker@1.9.0/dist/locales/bootstrap-datepicker.id.min.js"></script>
     <!-- Custom JS -->
     <script src="script.js"></script>
+    <!-- Delete Transaction Confirmation Modal -->
+<div class="modal fade" id="confirmDeleteTransactionModal" tabindex="-1" aria-labelledby="confirmDeleteTransactionModalLabel" aria-hidden="true">
+  <div class="modal-dialog modal-dialog-centered">
+    <div class="modal-content">
+      <div class="modal-header">
+        <h5 class="modal-title text-danger" id="confirmDeleteTransactionModalLabel">Confirm Delete Transaction</h5>
+        <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+      </div>
+      <div class="modal-body">
+        Are you sure you want to delete this transaction?
+      </div>
+      <div class="modal-footer">
+        <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">No</button>
+        <button type="button" class="btn btn-danger" id="confirmDeleteTransactionBtn">Yes, Delete</button>
+      </div>
+    </div>
+  </div>
+</div>
 </body>
 </html>

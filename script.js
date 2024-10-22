@@ -54,36 +54,43 @@ $(document).ready(function() {
         `;
 
         if(data.transactions && data.transactions.length > 0) {
-            var transactionsHtml = `
-                <h5>Transactions:</h5>
-                <div class="table-responsive">
-                    <table class="table table-striped">
-                        <thead>
-                            <tr>
-                                <th>No.</th>
-                                <th>Date</th>
-                                <th>Type</th>
-                                <th>Amount (IDR)</th>
-                                <th>Description</th>
-                                <th>Balance (IDR)</th>
-                            </tr>
-                        </thead>
-                        <tbody>
-            `;
+            // Update the table header in transactionsHtml
+var transactionsHtml = `
+<h5>Transactions:</h5>
+<div class="table-responsive">
+    <table class="table table-striped">
+        <thead>
+            <tr>
+                <th>No.</th>
+                <th>Date</th>
+                <th>Type</th>
+                <th>Amount (IDR)</th>
+                <th>Description</th>
+                <th>Balance (IDR)</th>
+                <th>Action</th> <!-- Add this line -->
+            </tr>
+        </thead>
+        <tbody>
+`;
 
-            data.transactions.forEach(function(tx, index) {
-                var rowNumber = (data.page - 1) * data.items_per_page + index + 1;
-                transactionsHtml += `
-                    <tr data-transaction-id="${tx.id}" data-transaction-type="${tx.type}">
-                        <td>${rowNumber}</td>
-                        <td>${formatDateToDDMMYYYY(tx.transaction_date)}</td>
-                        <td>${tx.type}</td>
-                        <td class="amount-cell editable-amount" contenteditable="true">${formatAmountWithSign(tx.amount, tx.type)}</td>
-                        <td class="editable-description" contenteditable="true">${tx.description}</td>
-                        <td class="amount-cell">${formatAmount(tx.balance)}</td>
-                    </tr>
-                `;
-            });
+            // Inside the data.transactions.forEach loop in renderSummary function
+data.transactions.forEach(function(tx, index) {
+    var rowNumber = (data.page - 1) * data.items_per_page + index + 1;
+    transactionsHtml += `
+        <tr data-transaction-id="${tx.id}" data-transaction-type="${tx.type}">
+            <td>${rowNumber}</td>
+            <td>${formatDateToDDMMYYYY(tx.transaction_date)}</td>
+            <td>${tx.type}</td>
+            <td class="amount-cell editable-amount" contenteditable="true">${formatAmountWithSign(tx.amount, tx.type)}</td>
+            <td class="editable-description" contenteditable="true">${tx.description}</td>
+            <td class="amount-cell">${formatAmount(tx.balance)}</td>
+            <td>
+                <button class="btn btn-danger btn-sm delete-transaction-btn">Delete</button>
+            </td>
+        </tr>
+    `;
+});
+
 
             transactionsHtml += `
                         </tbody>
@@ -162,6 +169,7 @@ $(document).ready(function() {
         // Attach event listeners to editable fields in the summary
         attachDescriptionEditListeners();
         attachAmountEditListeners();
+        attachDeleteListeners(); // Add this line
 
         // Attach event listeners to pagination links
         $('#summaryResult .pagination a.page-link').click(function(e) {
@@ -171,6 +179,55 @@ $(document).ready(function() {
             $('#summaryForm').submit();
         });
     }
+
+// Handle delete transaction confirmation
+$('#confirmDeleteTransactionBtn').click(function() {
+    var transactionId = $('#confirmDeleteTransactionModal').data('transaction-id');
+    var transactionRow = $('#confirmDeleteTransactionModal').data('transaction-row');
+
+    // Disable the button to prevent multiple clicks
+    $('#confirmDeleteTransactionBtn').prop('disabled', true).text('Deleting...');
+
+    // Send AJAX request to delete_transaction.php
+    $.ajax({
+        url: 'delete_transaction.php',
+        type: 'POST',
+        data: { id: transactionId },
+        dataType: 'json',
+        success: function(response) {
+            if(response.success) {
+                // Remove the transaction row from the table
+                transactionRow.remove();
+
+                // Optionally, show a success message
+                showAlert('#formMessage', 'success', response.message);
+
+                // Refresh the transaction history or summary to update balances
+                if ($('#transactionHistory').is(':visible')) {
+                    loadTransactions($('#transactionCount').val() || 10);
+                } else if ($('#summaryResult').is(':visible')) {
+                    $('#summaryForm').submit();
+                }
+
+            } else {
+                // Show error message
+                showAlert('#formMessage', 'danger', response.message);
+            }
+        },
+        error: function() {
+            showAlert('#formMessage', 'danger', 'An error occurred while deleting the transaction.');
+        },
+        complete: function() {
+            // Re-enable the delete button and reset text
+            $('#confirmDeleteTransactionBtn').prop('disabled', false).text('Yes, Delete');
+            // Hide the modal
+            var deleteModalEl = document.getElementById('confirmDeleteTransactionModal');
+            var deleteModal = bootstrap.Modal.getInstance(deleteModalEl);
+            deleteModal.hide();
+        }
+    });
+});
+
 
     // Initialize datepickers
     $('.datepicker').datepicker({
@@ -219,6 +276,26 @@ $(document).ready(function() {
         dateChangeModal.hide();
     });
 
+
+    function showAlert(containerSelector, type, message) {
+        // Create the alert div with Bootstrap classes
+        var alertHtml = `
+        <div class="alert alert-${type} alert-dismissible fade show" role="alert">
+            ${message}
+        </div>
+    `;
+    
+        // Insert the alert into the specified container
+        $(containerSelector).html(alertHtml);
+    
+        // Automatically fade out and remove the alert after 2 seconds
+        setTimeout(function() {
+            $(containerSelector).find('.alert').fadeOut('slow', function() {
+                $(this).remove();
+            });
+        }, 2000); // 2000 milliseconds = 2 seconds
+    }
+    
     // **Function to Get URL Parameters (Optional)**
     function getUrlParams() {
         var params = {};
@@ -427,6 +504,20 @@ $(document).ready(function() {
         });
     });
 
+    function attachDeleteListeners() {
+        $('.delete-transaction-btn').off('click').on('click', function() {
+            var transactionId = $(this).closest('tr').data('transaction-id');
+            var transactionRow = $(this).closest('tr');
+    
+            // Show confirmation modal
+            $('#confirmDeleteTransactionModal').data('transaction-id', transactionId);
+            $('#confirmDeleteTransactionModal').data('transaction-row', transactionRow);
+            var deleteModal = new bootstrap.Modal(document.getElementById('confirmDeleteTransactionModal'));
+            deleteModal.show();
+        });
+    }
+    
+
     // Function to format amount with sign
     function formatAmountWithSign(amount, type) {
         // Ensure the amount is a number
@@ -474,34 +565,41 @@ $(document).ready(function() {
                     `;
 
                     if (transactions && transactions.length > 0) {
-                        historyHtml += `
-                            <div class="table-responsive">
-                                <table class="table table-striped">
-                                    <thead>
-                                        <tr>
-                                            <th>No.</th>
-                                            <th>Date</th>
-                                            <th>Type</th>
-                                            <th>Amount (IDR)</th>
-                                            <th>Description</th>
-                                            <th>Balance (IDR)</th>
-                                        </tr>
-                                    </thead>
-                                    <tbody>
-                        `;
+                        // Update the table header in historyHtml
+historyHtml += `
+<div class="table-responsive">
+    <table class="table table-striped">
+        <thead>
+            <tr>
+                <th>No.</th>
+                <th>Date</th>
+                <th>Type</th>
+                <th>Amount (IDR)</th>
+                <th>Description</th>
+                <th>Balance (IDR)</th>
+                <th>Action</th> <!-- Add this line -->
+            </tr>
+        </thead>
+        <tbody>
+`;
 
-                        transactions.forEach(function(tx, index) {
-                            historyHtml += `
-                                <tr data-transaction-id="${tx.id}">
-                                    <td>${index + 1}</td>
-                                    <td>${formatDateToDDMMYYYY(tx.transaction_date)}</td>
-                                    <td>${tx.type}</td>
-                                    <td class="amount-cell editable-amount" contenteditable="true">${formatAmountWithSign(tx.amount, tx.type)}</td>
-                                    <td class="editable-description" contenteditable="true">${tx.description}</td>
-                                    <td class="amount-cell">${formatAmount(tx.balance)}</td>
-                                </tr>
-                            `;
-                        });                                  
+                        // Inside the transactions.forEach loop in loadTransactions function
+transactions.forEach(function(tx, index) {
+    historyHtml += `
+        <tr data-transaction-id="${tx.id}">
+            <td>${index + 1}</td>
+            <td>${formatDateToDDMMYYYY(tx.transaction_date)}</td>
+            <td>${tx.type}</td>
+            <td class="amount-cell editable-amount" contenteditable="true">${formatAmountWithSign(tx.amount, tx.type)}</td>
+            <td class="editable-description" contenteditable="true">${tx.description}</td>
+            <td class="amount-cell">${formatAmount(tx.balance)}</td>
+            <td>
+                <button class="btn btn-danger btn-sm delete-transaction-btn">Delete</button>
+            </td>
+        </tr>
+    `;
+});
+                    
 
                         historyHtml += `
                                     </tbody>
@@ -517,6 +615,7 @@ $(document).ready(function() {
                     // Attach event listeners to editable fields
                     attachDescriptionEditListeners();
                     attachAmountEditListeners();
+                    attachDeleteListeners(); // Add this line
 
                 } else {
                     $('#transactionHistory').html('<div class="alert alert-danger">' + response.message + '</div>');
