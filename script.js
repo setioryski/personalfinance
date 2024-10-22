@@ -77,18 +77,20 @@ var transactionsHtml = `
 data.transactions.forEach(function(tx, index) {
     var rowNumber = (data.page - 1) * data.items_per_page + index + 1;
     transactionsHtml += `
-        <tr data-transaction-id="${tx.id}" data-transaction-type="${tx.type}">
-            <td>${rowNumber}</td>
-            <td>${formatDateToDDMMYYYY(tx.transaction_date)}</td>
-            <td>${tx.type}</td>
-            <td class="amount-cell editable-amount" contenteditable="true">${formatAmountWithSign(tx.amount, tx.type)}</td>
-            <td class="editable-description" contenteditable="true">${tx.description}</td>
-            <td class="amount-cell">${formatAmount(tx.balance)}</td>
-            <td>
-                <button class="btn btn-danger btn-sm delete-transaction-btn">Delete</button>
-            </td>
-        </tr>
-    `;
+    <tr data-transaction-id="${tx.id}" data-transaction-type="${tx.type}">
+        <td>${rowNumber}</td>
+        <td>${formatDateToDDMMYYYY(tx.transaction_date)}</td>
+        <td>${tx.type}</td>
+        <td class="amount-cell editable-amount" contenteditable="true">${formatAmountWithSign(tx.amount, tx.type)}</td>
+        <td class="editable-description" contenteditable="true">${tx.description}</td>
+        <td class="amount-cell">${formatAmount(tx.balance)}</td>
+        <td>
+            <button class="btn btn-delete btn-sm delete-transaction-btn" title="Delete Transaction">
+                <i class="fa-solid fa-trash"></i>
+            </button>
+        </td>
+    </tr>
+`;
 });
 
 
@@ -585,19 +587,22 @@ historyHtml += `
 
                         // Inside the transactions.forEach loop in loadTransactions function
 transactions.forEach(function(tx, index) {
-    historyHtml += `
-        <tr data-transaction-id="${tx.id}">
-            <td>${index + 1}</td>
-            <td>${formatDateToDDMMYYYY(tx.transaction_date)}</td>
-            <td>${tx.type}</td>
-            <td class="amount-cell editable-amount" contenteditable="true">${formatAmountWithSign(tx.amount, tx.type)}</td>
-            <td class="editable-description" contenteditable="true">${tx.description}</td>
-            <td class="amount-cell">${formatAmount(tx.balance)}</td>
-            <td>
-                <button class="btn btn-danger btn-sm delete-transaction-btn">Delete</button>
-            </td>
-        </tr>
-    `;
+    // Transaction History
+historyHtml += `
+<tr data-transaction-id="${tx.id}">
+    <td>${index + 1}</td>
+    <td>${formatDateToDDMMYYYY(tx.transaction_date)}</td>
+    <td>${tx.type}</td>
+    <td class="amount-cell editable-amount" contenteditable="true">${formatAmountWithSign(tx.amount, tx.type)}</td>
+    <td class="editable-description" contenteditable="true">${tx.description}</td>
+    <td class="amount-cell">${formatAmount(tx.balance)}</td>
+    <td>
+        <button class="btn btn-delete btn-sm delete-transaction-btn" title="Delete Transaction">
+            <i class="fa-solid fa-trash"></i>
+        </button>
+    </td>
+</tr>
+`;
 });
                     
 

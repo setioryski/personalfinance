@@ -405,3 +405,50 @@ h1, h3, h5 {
         font-size: 0.9em;
     }
 }
+
+.btn-delete {
+    background-color: #f0f4f8; /* Soft light gray-blue background */
+    border: none; /* Remove default border */
+    color: #ff5c5c; /* Soft red color for the icon */
+    border-radius: 50%; /* Make the button circular */
+    width: 30px;
+    height: 30px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    transition: background-color 0.3s, transform 0.2s;
+    cursor: pointer;
+}
+
+.btn-delete i {
+    font-size: 14px; /* Icon size */
+}
+
+.btn-delete:hover {
+    background-color: #e0e7ed; /* Slightly darker on hover */
+    transform: scale(1.1); /* Slightly enlarge on hover */
+}
+
+.btn-delete:active {
+    transform: scale(0.95); /* Slightly shrink on click */
+}
+
+/* Optional: Tooltip Styling for Better Visibility */
+.tooltip-inner {
+    background-color: #555 !important;
+    color: #fff !important;
+    font-size: 0.875rem;
+}
+
+.tooltip.bs-tooltip-top .tooltip-arrow::before,
+.tooltip.bs-tooltip-auto[x-placement^="top"] .tooltip-arrow::before {
+    border-top-color: #555 !important;
+}
+
+.btn-delete {
+    box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+}
+
+.btn-delete:hover {
+    box-shadow: 0 4px 8px rgba(0, 0, 0, 0.15);
+}
