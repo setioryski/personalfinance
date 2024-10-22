@@ -62,36 +62,56 @@
             <!-- Tab Content -->
             <div class="tab-content" id="financeTabsContent">
                 <!-- Add Transaction Tab -->
-                <div class="tab-pane fade show active" id="add" role="tabpanel" aria-labelledby="add-tab">
-                    <form id="transactionForm">
-                        <div class="mt-3">
-                            <label for="date" class="form-label">Date<span class="text-danger">*</span>:</label>
-                            <!-- Changed input type to 'text' for datepicker -->
-                            <input type="text" class="form-control datepicker" id="date" name="date" required placeholder="dd-mm-yyyy">
-                        </div>
-                        <div class="mb-3">
-                            <label class="form-label">Type<span class="text-danger">*</span>:</label><br>
-                            <div class="form-check form-check-inline">
-                                <input class="form-check-input" type="radio" name="type" id="income" value="income" required>
-                                <label class="form-check-label" for="income">Income</label>
-                            </div>
-                            <div class="form-check form-check-inline">
-                                <input class="form-check-input" type="radio" name="type" id="expense" value="expense" required>
-                                <label class="form-check-label" for="expense">Expense</label>
-                            </div>
-                        </div>
-                        <div class="mb-3">
-                            <label for="amount" class="form-label">Amount (IDR)<span class="text-danger">*</span>:</label>
-                            <input type="text" class="form-control" id="amount" name="amount" required placeholder="e.g., 1,500,000">
-                        </div>
-                        <div class="mb-3">
-                            <label for="description" class="form-label">Description:</label>
-                            <input type="text" class="form-control" id="description" name="description" placeholder="Optional">
-                        </div>
-                        <button type="submit" class="btn btn-primary">Add Transaction</button>
-                    </form>
-                    <div id="formMessage" class="mt-3"></div>
-                </div>
+<div class="tab-pane fade show active" id="add" role="tabpanel" aria-labelledby="add-tab">
+    <form id="transactionForm">
+        <div class="mt-3">
+            <label for="date" class="form-label">Date<span class="text-danger">*</span>:</label>
+            <!-- Date input with ID and class -->
+            <input type="text" class="form-control datepicker" id="date" name="date" required placeholder="dd-mm-yyyy">
+        </div>
+        <!-- Rest of your form fields -->
+        <div class="mb-3">
+            <label class="form-label">Type<span class="text-danger">*</span>:</label><br>
+            <div class="form-check form-check-inline">
+                <input class="form-check-input" type="radio" name="type" id="income" value="income" required>
+                <label class="form-check-label" for="income">Income</label>
+            </div>
+            <div class="form-check form-check-inline">
+                <input class="form-check-input" type="radio" name="type" id="expense" value="expense" required>
+                <label class="form-check-label" for="expense">Expense</label>
+            </div>
+        </div>
+        <div class="mb-3">
+            <label for="amount" class="form-label">Amount (IDR)<span class="text-danger">*</span>:</label>
+            <input type="text" class="form-control" id="amount" name="amount" required placeholder="e.g., 1,500,000">
+        </div>
+        <div class="mb-3">
+            <label for="description" class="form-label">Description:</label>
+            <input type="text" class="form-control" id="description" name="description" placeholder="Optional">
+        </div>
+        <button type="submit" class="btn btn-primary">Add Transaction</button>
+    </form>
+    <div id="formMessage" class="mt-3"></div>
+</div>
+
+<!-- Date Change Confirmation Modal -->
+<div class="modal fade" id="confirmDateChangeModal" tabindex="-1" aria-labelledby="confirmDateChangeModalLabel" aria-hidden="true">
+  <div class="modal-dialog modal-dialog-centered">
+    <div class="modal-content">
+      <div class="modal-header">
+        <h5 class="modal-title text-danger" id="confirmDateChangeModalLabel">Confirm Date Change</h5>
+        <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+      </div>
+      <div class="modal-body">
+        Do you really want to change the date?
+      </div>
+      <div class="modal-footer">
+        <button type="button" class="btn btn-secondary" id="cancelDateChangeBtn">No</button>
+        <button type="button" class="btn btn-primary" id="confirmDateChangeBtn">Yes</button>
+      </div>
+    </div>
+  </div>
+</div>
 
                 <!-- Transaction History Tab -->
                 <div class="tab-pane fade" id="history" role="tabpanel" aria-labelledby="history-tab">

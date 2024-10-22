@@ -366,3 +366,42 @@ h1, h3, h5 {
     background-color: #d4edda; /* Light green background */
     transition: background-color 2s ease;
 }
+
+/* Pagination Styles */
+.pagination {
+    margin-top: 20px;
+}
+
+.pagination .page-item .page-link {
+    color: #007aff;
+    border-radius: 8px;
+    border: none;
+    margin: 0 5px;
+}
+
+.pagination .page-item.active .page-link {
+    background-color: #007aff;
+    color: #fff;
+    border-radius: 8px;
+    border: none;
+}
+
+.pagination .page-item.disabled .page-link {
+    color: #c7c7cc;
+}
+
+.pagination .page-link:hover {
+    background-color: #e5f6fd;
+}
+
+.pagination .page-link {
+    padding: 10px 15px;
+}
+
+/* Adjust pagination on small screens */
+@media (max-width: 576px) {
+    .pagination .page-link {
+        padding: 8px 12px;
+        font-size: 0.9em;
+    }
+}
