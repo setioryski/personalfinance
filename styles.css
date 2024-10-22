@@ -354,3 +354,15 @@ h1, h3, h5 {
 .table-responsive {
     overflow-x: auto;
 }
+
+/* Style editable amount cells */
+.editable-amount {
+    border-bottom: 1px dashed #007aff;
+    cursor: text;
+}
+
+/* Highlight updated amount */
+.amount-updated {
+    background-color: #d4edda; /* Light green background */
+    transition: background-color 2s ease;
+}

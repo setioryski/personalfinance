@@ -6,23 +6,22 @@ $(document).ready(function() {
     })
 
     // Function to format amount in IDR with sign and insert zero-width spaces
-    function formatAmountWithSign(amount, type) {
+    function formatAmount(amount) {
         // Ensure the amount is a number
         amount = parseFloat(amount);
         if (isNaN(amount)) amount = 0;
-        // Determine the sign based on transaction type
-        var sign = '';
-        if (type.toLowerCase() === 'income') {
-            sign = '+';
-        } else if (type.toLowerCase() === 'expense') {
-            sign = '-';
-        }
-        // Format to two decimal places with commas
-        const formattedNumber = amount.toLocaleString('en-US', { minimumFractionDigits: 2, maximumFractionDigits: 2 });
-        // Insert zero-width space after each comma and before decimal point
-        const formattedWithSpaces = formattedNumber.replace(/,/g, ',\u200B').replace('.', '\u200B.');
-        return `${sign} Rp${formattedWithSpaces}`;
+        // Round to the nearest integer
+        amount = Math.round(amount);
+    
+        // Format with commas as thousands separators
+        const formattedNumber = amount.toString().replace(/\B(?=(\d{3})+(?!\d))/g, ",");
+        // Add '.00' decimal part
+        const formattedWithDecimals = formattedNumber + '.00';
+        // Insert zero-width space after each comma
+        const formattedWithSpaces = formattedWithDecimals.replace(/,/g, ',\u200B');
+        return `Rp${formattedWithSpaces}`;
     }
+    
 
     // Function to format amount in IDR and insert zero-width spaces
     function formatAmount(amount) {
@@ -59,7 +58,6 @@ $(document).ready(function() {
     });
 
     // **Function to Get URL Parameters (Optional)**
-    // If you still want to handle URL parameters without changing tabs, you can keep this function
     function getUrlParams() {
         var params = {};
         var queryString = window.location.search.substring(1);
@@ -72,7 +70,6 @@ $(document).ready(function() {
     }
 
     // **Set the 'Add Transaction' Tab as the Initial Active Tab**
-    // Remove any code that changes the active tab based on URL parameters or localStorage
     var tabTrigger = new bootstrap.Tab(document.querySelector('button[data-bs-target="#add"]'));
     tabTrigger.show();
 
@@ -107,7 +104,6 @@ $(document).ready(function() {
     localStorage.setItem('summaryEndDate', lastDayStr);
 
     // **Optionally Handle URL Parameters Without Changing Tabs**
-    // If you still want to prefill the Summary form when URL parameters are present, you can do so without changing the active tab
     var urlParams = getUrlParams();
     if (urlParams.start_date && urlParams.end_date) {
         $('#start_date').datepicker('update', urlParams.start_date);
@@ -127,7 +123,6 @@ $(document).ready(function() {
     }
 
     // **Load stored summary result if Summary tab is active**
-    // Since the Add Transaction tab is always the initial tab, we check if the Summary tab is active before loading stored results
     $('button[data-bs-toggle="tab"]').on('shown.bs.tab', function (e) {
         var activeTab = $(e.target).attr('data-bs-target');
         if (activeTab === '#summary') {
@@ -256,7 +251,7 @@ $(document).ready(function() {
                             </div>
                         </div>
                     `;
-
+            
                     if(data.transactions && data.transactions.length > 0) {
                         var transactionsHtml = `
                             <h5>Transactions:</h5>
@@ -273,45 +268,42 @@ $(document).ready(function() {
                                     </thead>
                                     <tbody>
                         `;
-
+            
                         data.transactions.forEach(function(tx, index) {
                             transactionsHtml += `
                                 <tr data-transaction-id="${tx.id}">
                                     <td>${index + 1}</td>
                                     <td>${formatDateToDDMMYYYY(tx.transaction_date)}</td>
                                     <td>${tx.type}</td>
-                                    <td class="amount-cell">${formatAmountWithSign(tx.amount, tx.type)}</td>
+                                    <td class="amount-cell editable-amount" contenteditable="true">${formatAmountWithSign(tx.amount, tx.type)}</td>
                                     <td class="editable-description" contenteditable="true">${tx.description}</td>
                                 </tr>
                             `;
                         });
-
+            
                         transactionsHtml += `
-                                        </tbody>
-                                    </table>
-                                </div>
-                            `;
+                                    </tbody>
+                                </table>
+                            </div>
+                        `;
                         summaryHtml += transactionsHtml;
                     } else {
                         summaryHtml += '<div class="alert alert-info">No transactions found in this date range.</div>';
                     }
-
+            
                     $('#summaryResult').html(summaryHtml);
-
+            
                     // Store the summary result in localStorage
                     localStorage.setItem('summaryResult', summaryHtml);
-
-                    // Attach event listener to editable descriptions
+            
+                    // Attach event listeners to editable fields in the summary
                     attachDescriptionEditListeners();
-
+                    attachAmountEditListeners();
+            
                 } else {
                     showAlert('#summaryResult', 'danger', response.message);
                 }
-            },
-            error: function() {
-                showAlert('#summaryResult', 'danger', 'An error occurred while fetching the summary.');
-            }
-        });
+            }});
     });
 
     // Handle Delete All Transactions
@@ -363,6 +355,29 @@ $(document).ready(function() {
         });
     });
 
+    function formatAmountWithSign(amount, type) {
+        // Ensure the amount is a number
+        amount = parseFloat(amount);
+        if (isNaN(amount)) amount = 0;
+        // Round to the nearest integer
+        amount = Math.round(amount);
+        // Determine the sign based on transaction type
+        var sign = '';
+        if (type.toLowerCase() === 'income') {
+            sign = '+';
+        } else if (type.toLowerCase() === 'expense') {
+            sign = '-';
+        }
+        // Format with commas as thousands separators
+        const formattedNumber = amount.toString().replace(/\B(?=(\d{3})+(?!\d))/g, ",");
+        // Add '.00' decimal part
+        const formattedWithDecimals = formattedNumber + '.00';
+        // Insert zero-width space after each comma
+        const formattedWithSpaces = formattedWithDecimals.replace(/,/g, ',\u200B');
+        return `${sign} Rp${formattedWithSpaces}`;
+    }
+    
+
     // Function to load transactions based on the selected count
     function loadTransactions(count = 10) {
         $.ajax({
@@ -409,26 +424,28 @@ $(document).ready(function() {
                                     <td>${index + 1}</td>
                                     <td>${formatDateToDDMMYYYY(tx.transaction_date)}</td>
                                     <td>${tx.type}</td>
-                                    <td class="amount-cell">${formatAmountWithSign(tx.amount, tx.type)}</td>
+                                    <td class="amount-cell editable-amount" contenteditable="true">${formatAmountWithSign(tx.amount, tx.type)}</td>
                                     <td class="editable-description" contenteditable="true">${tx.description}</td>
                                     <td class="amount-cell">${formatAmount(tx.balance)}</td>
                                 </tr>
                             `;
-                        });
+                        });                                  
 
                         historyHtml += `
-                                        </tbody>
-                                    </table>
-                                </div>
-                            `;
+                                    </tbody>
+                                </table>
+                            </div>
+                        `;
                     } else {
                         historyHtml += '<div class="alert alert-info">No transactions found.</div>';
                     }
 
                     $('#transactionHistory').html(historyHtml);
 
-                    // Attach event listener to editable descriptions
-                    attachDescriptionEditListeners();
+// Attach event listeners to editable fields
+attachDescriptionEditListeners();
+attachAmountEditListeners(); // Add this line
+
 
                 } else {
                     $('#transactionHistory').html('<div class="alert alert-danger">' + response.message + '</div>');
@@ -473,6 +490,192 @@ $(document).ready(function() {
             });
         });
     }
+
+    // Function to attach event listeners to editable amounts
+    function attachAmountEditListeners() {
+        $('.editable-amount').off('focus').on('focus', function() {
+            var cell = $(this);
+            var amountText = cell.text().trim();
+    
+            // Remove currency symbols and negative sign
+            var plainAmount = amountText.replace(/[^0-9.,]/g, '');
+    
+            // Remove decimal point and everything after it
+            if (plainAmount.includes('.')) {
+                plainAmount = plainAmount.substring(0, plainAmount.indexOf('.'));
+            } else if (plainAmount.includes(',')) {
+                // Check if comma is used as decimal separator
+                var lastCommaIndex = plainAmount.lastIndexOf(',');
+                if (plainAmount.length - lastCommaIndex - 1 <= 2) {
+                    // Likely decimal portion, remove it
+                    plainAmount = plainAmount.substring(0, lastCommaIndex);
+                }
+            }
+    
+            cell.text(plainAmount);
+        });
+    
+        // Input event to format amount as user types
+        $('.editable-amount').off('input').on('input', function() {
+            var cell = $(this);
+            var inputVal = cell.text();
+    
+            // Remove any character that's not a digit
+            var numericVal = inputVal.replace(/[^\d]/g, '');
+    
+            // Add commas every three digits
+            var formattedVal = numericVal.replace(/\B(?=(\d{3})+(?!\d))/g, ',');
+    
+            // Update the cell text
+            cell.text(formattedVal);
+    
+            // Move cursor to the end
+            setEndOfContenteditable(cell[0]);
+        });
+    
+        $('.editable-amount').off('blur').on('blur', function() {
+            var cell = $(this);
+            var newAmountText = cell.text().trim();
+    
+            // Remove commas
+            var newAmountClean = newAmountText.replace(/,/g, '');
+    
+            // Parse as integer
+            var newAmount = parseInt(newAmountClean, 10);
+    
+            if (isNaN(newAmount) || newAmount <= 0) {
+                alert('Please enter a valid positive number for the amount.');
+                // Revert to previous amount
+                loadTransactions($('#transactionCount').val() || 10);
+                return;
+            }
+    
+            var transactionId = cell.closest('tr').data('transaction-id');
+            var transactionType = cell.closest('tr').find('td:nth-child(3)').text().trim();
+    
+            // Send AJAX request to update_amount.php
+            $.ajax({
+                url: 'update_amount.php',
+                type: 'POST',
+                data: {
+                    id: transactionId,
+                    amount: newAmount,
+                    type: transactionType
+                },
+                dataType: 'json',
+                success: function(response) {
+                    if(response.success) {
+                        // Optionally show a success message or highlight the cell
+                        cell.addClass('amount-updated');
+                        setTimeout(function() {
+                            cell.removeClass('amount-updated');
+                        }, 2000);
+    
+                        // Reload the transactions to update balances
+                        loadTransactions($('#transactionCount').val() || 10);
+                    } else {
+                        alert('Failed to update amount: ' + response.message);
+                        // Revert to previous amount
+                        loadTransactions($('#transactionCount').val() || 10);
+                    }
+                },
+                error: function() {
+                    alert('An error occurred while updating the amount.');
+                    // Revert to previous amount
+                    loadTransactions($('#transactionCount').val() || 10);
+                }
+            });
+        });
+    
+        // Prevent newlines and handle Enter key
+        $('.editable-amount').off('keydown').on('keydown', function(e) {
+            if (e.keyCode === 13) { // Enter key
+                e.preventDefault();
+                $(this).blur();
+            }
+        });
+    }
+    
+    // Helper function to move cursor to the end of contenteditable element
+    function setEndOfContenteditable(contentEditableElement) {
+        var range, selection;
+        if(document.createRange) {
+            range = document.createRange();
+            range.selectNodeContents(contentEditableElement);
+            range.collapse(false);
+            selection = window.getSelection();
+            selection.removeAllRanges();
+            selection.addRange(range);
+        }
+    }
+    
+    
+    // Helper function to move cursor to the end of contenteditable element
+    function setEndOfContenteditable(contentEditableElement) {
+        var range, selection;
+        if(document.createRange) {
+            range = document.createRange();
+            range.selectNodeContents(contentEditableElement);
+            range.collapse(false);
+            selection = window.getSelection();
+            selection.removeAllRanges();
+            selection.addRange(range);
+        }
+    }
+    
+    
+    // Helper function to move cursor to the end of contenteditable element
+    function setEndOfContenteditable(contentEditableElement) {
+        var range, selection;
+        if(document.createRange) {
+            range = document.createRange();
+            range.selectNodeContents(contentEditableElement);
+            range.collapse(false);
+            selection = window.getSelection();
+            selection.removeAllRanges();
+            selection.addRange(range);
+        }
+    }
+    
+
+// Helper function to move cursor to the end of contenteditable element
+function setEndOfContenteditable(contentEditableElement) {
+    var range, selection;
+    if(document.createRange) { // Firefox, Chrome, Opera, Safari, IE 9+
+        range = document.createRange(); // Create a range (a range is a like the selection but invisible)
+        range.selectNodeContents(contentEditableElement); // Select the entire contents of the element with the range
+        range.collapse(false); // Collapse the range to the end point. false means collapse to end rather than the start
+        selection = window.getSelection(); // Get the selection object (allows you to change selection)
+        selection.removeAllRanges(); // Remove any selections already made
+        selection.addRange(range); // Make the range you have just created the visible selection
+    }
+}
+
+
+function setEndOfContenteditable(contentEditableElement) {
+    var range, selection;
+    if(document.createRange) { // Firefox, Chrome, Opera, Safari, IE 9+
+        range = document.createRange(); // Create a range (a range is a like the selection but invisible)
+        range.selectNodeContents(contentEditableElement); // Select the entire contents of the element with the range
+        range.collapse(false); // Collapse the range to the end point. false means collapse to end rather than the start
+        selection = window.getSelection(); // Get the selection object (allows you to change selection)
+        selection.removeAllRanges(); // Remove any selections already made
+        selection.addRange(range); // Make the range you have just created the visible selection
+    }
+}
+
+
+// Function to set caret position in contenteditable element
+function setCaretPosition(el, offset) {
+    var range = document.createRange();
+    var sel = window.getSelection();
+    range.setStart(el.childNodes[0], Math.min(offset, el.childNodes[0].length));
+    range.collapse(true);
+    sel.removeAllRanges();
+    sel.addRange(range);
+}
+
+
 
     // Handle change event on the transaction count selector
     $('#transactionCount').change(function() {
