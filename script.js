@@ -268,7 +268,7 @@ $(document).ready(function() {
                                     </thead>
                                     <tbody>
                         `;
-            
+                    
                         data.transactions.forEach(function(tx, index) {
                             transactionsHtml += `
                                 <tr data-transaction-id="${tx.id}">
@@ -280,25 +280,28 @@ $(document).ready(function() {
                                 </tr>
                             `;
                         });
-            
+                    
                         transactionsHtml += `
                                     </tbody>
                                 </table>
                             </div>
                         `;
                         summaryHtml += transactionsHtml;
-                    } else {
+                    }
+                     else {
                         summaryHtml += '<div class="alert alert-info">No transactions found in this date range.</div>';
                     }
             
-                    $('#summaryResult').html(summaryHtml);
-            
-                    // Store the summary result in localStorage
-                    localStorage.setItem('summaryResult', summaryHtml);
-            
-                    // Attach event listeners to editable fields in the summary
-                    attachDescriptionEditListeners();
-                    attachAmountEditListeners();
+                    // Existing code after generating the summary
+$('#summaryResult').html(summaryHtml);
+
+// Store the summary result in localStorage
+localStorage.setItem('summaryResult', summaryHtml);
+
+// Attach event listeners to editable fields in the summary
+attachDescriptionEditListeners();
+attachAmountEditListeners(); // Add this line
+
             
                 } else {
                     showAlert('#summaryResult', 'danger', response.message);
@@ -536,23 +539,28 @@ attachAmountEditListeners(); // Add this line
         $('.editable-amount').off('blur').on('blur', function() {
             var cell = $(this);
             var newAmountText = cell.text().trim();
-    
+        
             // Remove commas
             var newAmountClean = newAmountText.replace(/,/g, '');
-    
+        
             // Parse as integer
             var newAmount = parseInt(newAmountClean, 10);
-    
+        
             if (isNaN(newAmount) || newAmount <= 0) {
                 alert('Please enter a valid positive number for the amount.');
                 // Revert to previous amount
-                loadTransactions($('#transactionCount').val() || 10);
+                // Reload the appropriate tab
+                if ($('#transactionHistory').is(':visible')) {
+                    loadTransactions($('#transactionCount').val() || 10);
+                } else if ($('#summaryResult').is(':visible')) {
+                    $('#summaryForm').submit();
+                }
                 return;
             }
-    
+        
             var transactionId = cell.closest('tr').data('transaction-id');
             var transactionType = cell.closest('tr').find('td:nth-child(3)').text().trim();
-    
+        
             // Send AJAX request to update_amount.php
             $.ajax({
                 url: 'update_amount.php',
@@ -570,22 +578,35 @@ attachAmountEditListeners(); // Add this line
                         setTimeout(function() {
                             cell.removeClass('amount-updated');
                         }, 2000);
-    
-                        // Reload the transactions to update balances
-                        loadTransactions($('#transactionCount').val() || 10);
+        
+                        // Reload the appropriate tab to update balances
+                        if ($('#transactionHistory').is(':visible')) {
+                            loadTransactions($('#transactionCount').val() || 10);
+                        } else if ($('#summaryResult').is(':visible')) {
+                            $('#summaryForm').submit();
+                        }
                     } else {
                         alert('Failed to update amount: ' + response.message);
                         // Revert to previous amount
-                        loadTransactions($('#transactionCount').val() || 10);
+                        if ($('#transactionHistory').is(':visible')) {
+                            loadTransactions($('#transactionCount').val() || 10);
+                        } else if ($('#summaryResult').is(':visible')) {
+                            $('#summaryForm').submit();
+                        }
                     }
                 },
                 error: function() {
                     alert('An error occurred while updating the amount.');
                     // Revert to previous amount
-                    loadTransactions($('#transactionCount').val() || 10);
+                    if ($('#transactionHistory').is(':visible')) {
+                        loadTransactions($('#transactionCount').val() || 10);
+                    } else if ($('#summaryResult').is(':visible')) {
+                        $('#summaryForm').submit();
+                    }
                 }
             });
         });
+        
     
         // Prevent newlines and handle Enter key
         $('.editable-amount').off('keydown').on('keydown', function(e) {
