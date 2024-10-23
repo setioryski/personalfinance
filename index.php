@@ -181,8 +181,9 @@ if (!isset($_SESSION['loggedin']) || $_SESSION['loggedin'] !== true) {
                     <div id="manageMessage" class="mt-3"></div>
 
                     <!-- Logout Button -->
-                    <a href="logout.php" class="btn btn-logout mt-4" title="Logout">
-                        <i class="fas fa-sign-out-alt me-2"></i> Logout
+                    <a href="logout.php" class="btn btn-logout-manage" title="Logout" aria-label="Logout">
+        <i class="fa-solid fa-right-from-bracket me-2"></i> Logout
+    </a>
                     </a>
                 </div>
             </div>

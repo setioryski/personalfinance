@@ -188,26 +188,6 @@ h1, h3, h5 {
     border-color: #7a7a7e;
 }
 
-.btn-logout {
-    background-color: var(--color-danger);
-    border-color: var(--color-danger);
-    color: var(--color-white);
-    border-radius: 8px;
-    padding: 10px 20px;
-    font-weight: 500;
-    transition: background-color 0.3s, transform 0.2s;
-    margin-top: 20px;
-}
-
-.btn-logout:hover {
-    background-color: #e23328;
-    border-color: #e23328;
-}
-
-.btn-logout:active {
-    transform: scale(0.95);
-}
-
 /* Delete Button Styles */
 .btn-delete {
     background-color: var(--color-delete-bg);
@@ -435,25 +415,35 @@ h1, h3, h5 {
     background-color: var(--color-background);
 }
 
-/* Logout Button Responsive */
-.btn-logout {
-    background-color: var(--color-danger);
-    border-color: var(--color-danger);
-    color: var(--color-white);
-    border-radius: 8px;
-    padding: 10px 20px;
-    font-weight: 500;
-    transition: background-color 0.3s, transform 0.2s;
-    margin-top: 20px;
+/* Target the Logout button in the Manage tab */
+.btn-logout-manage {
+    background-color: transparent; /* Make background transparent */
+    color: black; /* Set font color to black */
+    border: none; /* Remove any borders if present */
+    padding: 0.5rem 1rem; /* Adjust padding as needed */
+    font-weight: 600; /* Optional: Make text bold */
+    transition: color 0.3s, transform 0.2s; /* Smooth transitions */
+    display: flex;
+    align-items: center;
+    cursor: pointer;
+    text-decoration: none; /* Remove underline for links */
 }
 
-.btn-logout:hover {
-    background-color: #e23328;
-    border-color: #e23328;
+/* Ensure the icon inherits the text color */
+.btn-logout-manage i {
+    color: black; /* Set icon color to black */
+    margin-right: 0.5rem; /* Space between icon and text */
 }
 
-.btn-logout:active {
-    transform: scale(0.95);
+/* Hover Effects */
+.btn-logout-manage:hover {
+    color: #333333; /* Slightly darker on hover */
+    transform: scale(1.05); /* Slightly enlarge on hover */
+}
+
+/* Active/Pressed State */
+.btn-logout-manage:active {
+    transform: scale(0.95); /* Slightly shrink on click */
 }
 
 /* Responsive Tables for Small Screens */

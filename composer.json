@@ -1,0 +1,13 @@
+{
+    "name": "setio/finance-tracker",
+    "description": "track income expense",
+    "authors": [
+        {
+            "name": "skip"
+        }
+    ],
+    "minimum-stability": "stable",
+    "require": {
+        "vlucas/phpdotenv": "^5.6"
+    }
+}
