@@ -1,5 +1,6 @@
 <?php
-session_start();
+// login.php
+require_once 'config.php'; // Include centralized configuration
 
 // Check if user is already logged in
 if (isset($_SESSION['loggedin']) && $_SESSION['loggedin'] === true) {

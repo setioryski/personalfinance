@@ -1,7 +1,8 @@
 <?php
-session_start();
+// index.php
+require_once 'config.php'; // Include centralized configuration
 
-// Check if the user is logged in, otherwise redirect to login page
+// Check if user is logged in, otherwise redirect to login page
 if (!isset($_SESSION['loggedin']) || $_SESSION['loggedin'] !== true) {
     header('Location: login.php');
     exit;
