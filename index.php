@@ -1,3 +1,12 @@
+<?php
+session_start();
+
+// Check if the user is logged in, otherwise redirect to login page
+if (!isset($_SESSION['loggedin']) || $_SESSION['loggedin'] !== true) {
+    header('Location: login.php');
+    exit;
+}
+?>
 <!DOCTYPE html>
 <html lang="en">
 <head>
@@ -23,7 +32,9 @@
     </style>
 </head>
 <body>
+    
     <div class="container my-5">
+
         <h1 class="text-center mb-4 display-4 finance-tracker-title">
             <i class="fas fa-wallet me-2"></i>Finance Tracker
         </h1>
@@ -163,6 +174,11 @@
                         <i class="fas fa-trash-alt"></i> Delete All Transactions
                     </button>
                     <div id="manageMessage" class="mt-3"></div>
+
+                        <!-- Logout Button -->
+        <a href="logout.php" class="btn btn-logout" title="Logout">
+            <i class="fas fa-sign-out-alt me-2"></i> Logout
+        </a>
                 </div>
             </div>
         </div>
