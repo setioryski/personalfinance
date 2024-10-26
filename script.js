@@ -812,44 +812,47 @@ historyHtml += `
     loadTransactions(initialCount);
 
     // Handle Summary Form Submission
-    $('#summaryForm').submit(function(event) {
-        event.preventDefault(); // Prevent default form submission
+    // Handle Summary Form Submission
+$('#summaryForm').submit(function(event) {
+    event.preventDefault(); // Prevent default form submission
 
-        // Convert dates to yyyy-mm-dd format
-        var startDate = formatDateToYYYYMMDD($('#start_date').val());
-        var endDate = $('#end_date').val() ? formatDateToYYYYMMDD($('#end_date').val()) : '';
+    // Convert dates to yyyy-mm-dd format
+    var startDate = formatDateToYYYYMMDD($('#start_date').val());
+    var endDate = $('#end_date').val() ? formatDateToYYYYMMDD($('#end_date').val()) : '';
+    var filterType = $('#filter_type').val(); // Get the filter type
 
-        // Store form data in localStorage
-        localStorage.setItem('summaryStartDate', $('#start_date').val());
-        localStorage.setItem('summaryEndDate', $('#end_date').val());
+    // Store form data in localStorage
+    localStorage.setItem('summaryStartDate', $('#start_date').val());
+    localStorage.setItem('summaryEndDate', $('#end_date').val());
 
-        console.log('Submitting form with summaryPage:', summaryPage); // For debugging
+    console.log('Submitting form with summaryPage:', summaryPage); // For debugging
 
-        var formDataObj = {
-            start_date: startDate,
-            end_date: endDate,
-            page: summaryPage, // Include the current page
-            items_per_page: 10 // You can make this dynamic if needed
-        };
+    var formDataObj = {
+        start_date: startDate,
+        end_date: endDate,
+        filter_type: filterType, // Include the filter type
+        page: summaryPage, // Include the current page
+        items_per_page: 10 // You can make this dynamic if needed
+    };
 
-        // Send AJAX request to get_summary.php
-        $.ajax({
-            url: 'get_summary.php',
-            type: 'POST',
-            data: formDataObj,
-            dataType: 'json',
-            success: function(response) {
-                if(response.success) {
-                    // Process the response
-                    renderSummary(response.data);
-                } else {
-                    showAlert('#summaryResult', 'danger', response.message);
-                }
-            },
-            error: function() {
-                showAlert('#summaryResult', 'danger', 'An error occurred while fetching the summary.');
+    // Send AJAX request to get_summary.php
+    $.ajax({
+        url: 'get_summary.php',
+        type: 'POST',
+        data: formDataObj,
+        dataType: 'json',
+        success: function(response) {
+            if(response.success) {
+                // Process the response
+                renderSummary(response.data);
+            } else {
+                showAlert('#summaryResult', 'danger', response.message);
             }
-        });
+        },
+        error: function() {
+            showAlert('#summaryResult', 'danger', 'An error occurred while fetching the summary.');
+        }
     });
+});
 
 });

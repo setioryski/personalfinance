@@ -164,6 +164,15 @@ if (!isset($_SESSION['loggedin']) || $_SESSION['loggedin'] !== true) {
                                 <input type="text" class="form-control datepicker" id="end_date" name="end_date" placeholder="dd-mm-yyyy">
                                 <small class="form-text text-muted">Leave blank to include all transactions from the start date onward.</small>
                             </div>
+                            <div class="col-md-4">
+    <label for="filter_type" class="form-label">Filter Type:</label>
+    <select id="filter_type" name="filter_type" class="form-select">
+        <option value="both" selected>Both</option>
+        <option value="income">Income</option>
+        <option value="expense">Expense</option>
+    </select>
+</div>
+
                             <div class="col-md-2 d-flex align-items-end">
                                 <button type="submit" class="btn btn-success w-100">Generate</button>
                             </div>

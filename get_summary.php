@@ -11,14 +11,25 @@ $start_date = isset($_POST['start_date']) ? $_POST['start_date'] : '';
 $end_date = isset($_POST['end_date']) ? $_POST['end_date'] : '';
 $page = isset($_POST['page']) ? intval($_POST['page']) : 1;
 $items_per_page = isset($_POST['items_per_page']) ? intval($_POST['items_per_page']) : 10;
+$filter_type = isset($_POST['filter_type']) ? $_POST['filter_type'] : 'both'; // New filter type
 
 if ($start_date) {
     // Prepare parameters and types for binding
     $params = [];
     $types = '';
 
+    // Determine the SQL condition for filtering based on the filter_type
+    $filter_condition = "type IN ('income', 'expense')";
+    if ($filter_type === 'income') {
+        $filter_condition = "type = 'income'";
+    } elseif ($filter_type === 'expense') {
+        $filter_condition = "type = 'expense'";
+    }
+
     // Base SQL query for transactions (without LIMIT) to fetch all transactions for balance calculation
-    $sql_all_transactions = "SELECT id, transaction_date, type, amount, description FROM transactions WHERE transaction_date >= ?";
+    $sql_all_transactions = "SELECT id, transaction_date, type, amount, description 
+                             FROM transactions 
+                             WHERE transaction_date >= ? AND $filter_condition";
     $params_all = [$start_date];
     $types_all = 's';
 
@@ -51,11 +62,11 @@ if ($start_date) {
     }
     $stmt_all->close();
 
-    // Calculate total income and total expense over the entire date range
+    // Calculate total income and total expense over the entire date range based on the filter
     $sql_totals = "SELECT 
         SUM(CASE WHEN type='income' THEN amount ELSE 0 END) as total_income,
         SUM(CASE WHEN type='expense' THEN amount ELSE 0 END) as total_expense
-        FROM transactions WHERE transaction_date >= ?";
+        FROM transactions WHERE transaction_date >= ? AND $filter_condition";
     $params_totals = [$start_date];
     $types_totals = 's';
 
